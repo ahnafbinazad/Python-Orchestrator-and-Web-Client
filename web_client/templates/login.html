@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div id="navbar">
+    <a id="homeLink" href="/">Home</a>
+</div>
+
+<!-- greeting.html -->
+{% if 'user_name' in session %}
+    <div>
+        <h2>Hello, {{ session['user_name'] }}! Log in as a different user.</h2>
+    </div>
+{% else %}
+    <div>
+        <h2><a href="{{ url_for('login') }}">Hello, sign up or login to propose and like trips!</a></h2>
+    </div>
+{% endif %}
+
+
+
+<div>
+    <h1>Login</h1>
+    <form id="loginForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+        <button type="button" onclick="login()">Login</button>
+    </form>
+    <p id="login-message" style="color: #333;"></p>
+    <p id="login-error-message" style="color: red;"></p>
+    <p>Don't have an account? <a href="{{ url_for('register') }}">Register here</a>.</p>
+</div>
+
+<script>
+    function login() {
+        var name = document.getElementById('name').value;
+
+        // Using AJAX to send the data to the Flask app for login
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '{{ url_for("login") }}', true);
+        xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    // Login successful, display message
+                    document.getElementById('login-message').textContent = JSON.parse(xhr.responseText).message || 'Login successful.';
+                    window.location.href = '{{ url_for("home") }}';
+                } else {
+                    // Handle login errors
+                    document.getElementById('login-error-message').textContent = JSON.parse(xhr.responseText).error || 'An error occurred during login.';
+                }
+            }
+        };
+
+        xhr.send(JSON.stringify({ name: name }));
+    }
+</script>
+
+</body>
+</html>

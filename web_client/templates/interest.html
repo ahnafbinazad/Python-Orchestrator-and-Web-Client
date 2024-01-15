@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interest Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div id="navbar">
+    <a id="homeLink" href="/">Home</a>
+</div>
+
+<!-- greeting.html -->
+{% if 'user_name' in session %}
+    <div>
+        <h2>Hello, <a href="{{ url_for('login') }}">{{ session['user_name'] }}</a>!</h2>
+    </div>
+{% else %}
+    <div>
+        <h2><a href="{{ url_for('login') }}">Login to like trips</a></h2>
+    </div>
+{% endif %}
+
+
+<div>
+    <h1>Proposed Trips</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Proposed By</th>
+                <th>Location</th>
+                <th>Date</th>
+                <th>Weather</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for trip in trips %}
+                <tr>
+                    <td>{{ trip.username }}</td>
+                    <td>{{ trip.location }}</td>
+                    <td>{{ trip.date }}</td>
+                    <td>{{ trip.weather }}</td>
+                    <!-- Modify the onclick function -->
+                    <td><button type="button" onclick="expressInterest('{{ trip.trip_id }}', '{{ trip.location }}', '{{ trip.date }}', '{{ trip.weather }}', this)">Like</button></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function expressInterest(tripId, location, date, weather, button) {
+        // Using AJAX to send the data to the Flask app for expressing interest
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '{{ url_for("express_interest") }}', true);
+        xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    // Interest expressed successfully, update the UI
+                    button.textContent = 'Liked!';
+                    button.disabled = true; // Disable the button after liking
+                } else {
+                    // Handle errors
+                    alert('An error occurred during interest expression.');
+                }
+            }
+        };
+
+        // Send the data including location, date, and weather
+        xhr.send(JSON.stringify({ trip_id: parseInt(tripId), location: location, date: date, weather: weather }));
+    }
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div id="navbar">
+    <a id="homeLink" href="/">Home</a>
+</div>
+
+<!-- greeting.html -->
+{% if 'user_name' in session %}
+    <div>
+        <h2>Hello, {{ session['user_name'] }}! Sign up as a new user.</h2>
+    </div>
+{% else %}
+    <div>
+        <h2><a href="{{ url_for('login') }}">Hello, sign up or login to propose and like trips!</a></h2>
+    </div>
+{% endif %}
+
+
+<div>
+    <h1>Register</h1>
+    <form id="registrationForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+        <button type="button" onclick="registerUser()">Register</button>
+    </form>
+    <p id="registration-message" style="color: #333;"></p>
+    <p id="registration-error-message" style="color: red;"></p>
+</div>
+
+<script>
+    function registerUser() {
+        var name = document.getElementById('name').value;
+
+        // Using AJAX to send the data to the Flask app for registration
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '{{ url_for("register") }}', true);
+        xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    // Registration successful, display message
+                    document.getElementById('registration-message').textContent = JSON.parse(xhr.responseText).message || 'Registration successful.';
+                    window.location.href = '{{ url_for("home") }}';
+                } else {
+                    // Handle registration errors
+                    document.getElementById('registration-error-message').textContent = JSON.parse(xhr.responseText).error || 'An error occurred during registration.';
+                }
+            }
+        };
+
+        xhr.send(JSON.stringify({ name: name }));
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Query</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div id="navbar">
+    <a id="homeLink" href="/">Home</a>
+</div>
+
+{% if 'user_name' in session %}
+    <div>
+        <h2>Hello, <a href="{{ url_for('login') }}">{{ session['user_name'] }}</a>!</h2>
+    </div>
+{% else %}
+    <div>
+        <h2><a href="{{ url_for('login') }}">Login to propose and like trips</a></h2>
+    </div>
+{% endif %}
+
+<div>
+    <h1>Weather Query</h1>
+
+    <form id="weatherForm">
+        <label for="location">Enter Location:</label>
+        <input type="text" id="location" name="location" required>
+        <button type="button" onclick="queryWeather()">Get Weather</button>
+    </form>
+</div>
+
+<script>
+    function queryWeather() {
+        var location = document.getElementById('location').value;
+
+        // Using AJAX to send the data to the Flask app for weather details
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '{{ url_for("query_weather") }}', true);
+        xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    // Redirect to weather.html to show the weather details
+                    window.location.href = "{{ url_for('weather') }}";
+
+                } else {
+                    // Handle errors
+                    alert('An error occurred while querying weather details.');
+                }
+            }
+        };
+
+        // Send the location in JSON format
+        xhr.send(JSON.stringify({ location: location }));
+    }
+
+</script>
+
+</body>
+</html>

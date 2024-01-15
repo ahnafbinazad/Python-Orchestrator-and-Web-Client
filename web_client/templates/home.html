@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Buddy</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<!-- greeting.html -->
+{% if 'user_name' in session %}
+    <div>
+        <h2>Hello, <a href="{{ url_for('login') }}">{{ session['user_name'] }}</a>!</h2>
+    </div>
+{% else %}
+    <div>
+        <h3><a href="{{ url_for('login') }}">Hello, login to propose and like trips!</a></h3>
+    </div>
+{% endif %}
+
+<h1>Welcome to Trip Finder</h1>
+<p><a href="login">Log In</a></p>
+<p><a href="register">Sign Up</a></p>
+<p><a href="query">Query A Trip</a></p>
+<p><a href="propose">Propose A Trip</a></p>
+<p><a href="interest">View Proposed Trips</a></p>
+<p><a href="liked">View Liked Trips</a></p>
+
+{% if 'user_name' in session %}
+    <form action="{{ url_for('logout') }}" method="post">
+        <input class="logout-link" type="submit" value="Log Out">
+    </form>
+{% endif %}
+
+
+</body>
+</html>

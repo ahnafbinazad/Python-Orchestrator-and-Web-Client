@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liked Trips</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div id="navbar">
+    <a id="homeLink" href="/">Home</a>
+</div>
+
+<!-- greeting.html -->
+{% if 'user_name' in session %}
+    <div>
+        <h2>Hello, <a href="{{ url_for('login') }}">{{ session['user_name'] }}</a>!</h2>
+    </div>
+{% else %}
+    <div>
+        <h2><a href="{{ url_for('login') }}">Login to propose and like trips</a></h2>
+    </div>
+{% endif %}
+
+{% if liked_trips %}
+    <h1>Liked Trips</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Liked By</th>
+            <th>Location</th>
+            <th>Date</th>
+            <th>Weather</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for trip in liked_trips %}
+            <tr>
+                <td>{{ trip.liker_name }}</td>
+                <td>{{ trip.location }}</td>
+                <td>{{ trip.date }}</td>
+                <td>{{ trip.weather }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+    <p>No liked trips. Check out some trips on the <a href="{{ url_for('express_interest') }}">Proposed Trips page</a>.</p>
+{% endif %}
+
+
